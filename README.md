@@ -52,55 +52,25 @@ As soon project is created, you should create a class for your plugin that inher
 This class must implement the following member-functions:
 ```C++
 	void Init(IMetricImage::ColorComponent cc, int width, int height, IMetricPlugin::ID start_id, IMetricValueSink* valueSink);
-```
-```C++
-	std::vector< std::pair <IMetricPlugin::ID, float> >	Measure(std::vector<IMetricImage*> &images);
-```
-```C++
-	std::vector< std::pair <IMetricPlugin::ID, float> >	MeasureAndVisualize(std::vector<IMetricImage*>&images, unsigned char *vis, int vis_pitch);
-```
-```C++
-	std::vector<IDinfo>	MapIDToFrame(bool visualize);
-```
-```C++
-	std::vector< std::pair <IMetricPlugin::ID, float> > CalculateAverage(bool visualize);
-```
-```C++
+	std::vector<std::pair<IMetricPlugin::ID, float>> Measure(std::vector<IMetricImage*> &images);
+	std::vector<std::pair<IMetricPlugin::ID, float>> MeasureAndVisualize(std::vector<IMetricImage*>&images, unsigned char *vis, int vis_pitch);
+	std::vector<IDinfo> MapIDToFrame(bool visualize);
+	std::vector<std::pair<IMetricPlugin::ID, float>> CalculateAverage(bool visualize);
 	int GetVideoNum(bool visualize);
-```
-```C++
 	std::vector <IMetricImage::ColorComponent> GetSupportedColorcomponents();
-```
-```C++
 	std::wstring GetName();
-```
-```C++
 	std::wstring GetInterfaceName();
-```
-```C++
 	std::wstring GetLongName();
-```
-```C++
 	std::wstring GetUnit();
-```
-```C++
 	std::wstring GetMetrInfoURL();
-```
-```C++
 	bool GetMetrIncline();
 ```
 
 And can implement the following functions:
 ```C++
 	void Stop();
-```
-```C++
 	const std::wstring& GetConfigJSON();
-```
-```C++
 	bool SetConfigParams(const std::wstring& json);
-```
-```C++
 	std::wstring GetConfigSummary();
 ```
 
@@ -120,15 +90,13 @@ Param ``start_id`` is using to index output values of plugin. If plugin should p
 You can save ``valueSink`` if you need to provide results at any time. Not all plugins should use ``valueSink``.
 
 ```C++
-	std::vector<IDinfo>	MapIDToFrame(bool visualize);
+	std::vector<IDinfo> MapIDToFrame(bool visualize);
 ```
-
 This function can give a name each result type. If you plugin provides N float results for each frame, the output should be an std::vector of N elements. You can distinguish the case of saving visualization and working without visualization save by ``visualize`` param.
 
 ```C++
 	int GetVideoNum(bool visualize);
 ```
-
 This function should return value 2 for reference metric and 1 for non-reference. Other values are not supported. You can distinguish the case of saving visualization and working without visualization save by ``visualize`` param.
 
 ```C++
@@ -170,12 +138,12 @@ This function should return URL of page with description of metric. It will be d
 	bool GetMetrIncline();
 ```
 	
-Should return true is "bigger means better" for this metric.
+Should return true if "bigger means better" for this metric.
 
 #### Measurement and providing results
 
 ```C++
-    std::vector< std::pair <IMetricPlugin::ID, float> Measure(std::vector<IMetricImage*> &images);
+    std::vector<std::pair<IMetricPlugin::ID, float>> Measure(std::vector<IMetricImage*> &images);
 ```
 
 You should implement this function that will be called for each frame of VQMT input consequently in case of no visualization needed. Param ``images`` will contain same number of images as value, returned by ``GetVideoNum``. Read more about input images in section [Imput image format](#imput-image-format).
@@ -190,13 +158,13 @@ If you choose to tell results value by return value of ``Measure``, it should re
 If you are using ``valueSink``, this is the last chance to use it for providing values. 
 ``Measure`` should not be called after stop, also, you shouldn\'t use ``valueSink``.
 ```C++
-	std::vector< std::pair <IMetricPlugin::ID, float> > CalculateAverage(bool visualize);
+	std::vector<std::pair<IMetricPlugin::ID, float>> CalculateAverage(bool visualize);
 ```
 Return average results in the same way as in ``Measure`` return value. You can\'t use ``valueSink`` for this task.
 
 #### Visualization
 ```C++
-	std::vector< std::pair <IMetricPlugin::ID, float> >	MeasureAndVisualize(std::vector<IMetricImage*>&images, unsigned char *vis, int vis_pitch);
+	std::vector<std::pair<IMetricPlugin::ID, float>>	MeasureAndVisualize(std::vector<IMetricImage*>&images, unsigned char *vis, int vis_pitch);
 ```
 This function should do same things as ``Measure``. Additionally, it should save visualization into ``vis`` argument. 
 ``vis`` param points to memory that contains RGB24 image of width and height provided to ``Init``. Use ``vis_pitch`` while filling this image.
@@ -208,7 +176,7 @@ This function should do same things as ``Measure``. Additionally, it should save
 Metric can be configured. The configuration described by return value of this function. It should be JSON object, that contains paires of type ``"param-key": <param-description>``. The ``<param-description>`` is object with following fields:
 * ``description``
 * ``help``
-* ``default_value`` -- this value will determine param type. It can be integer, string of floating point.
+* ``default_value`` - this value will determine param type. It can be integer, string of floating point.
 * ``possible_values`` (optional) - this value should be an array. If ``default_value`` is string, you can create enum param specifying this value.
 
 If ``default_value`` is numeric, you can provide 2-element array as first argument, specifying possible value range.
@@ -239,10 +207,10 @@ See ``vqmt_sample_plugin.cpp`` to know, what functions you should export. You ca
 #### Understanging SDK structure and exports
 Each plugin is shared library that should export following functions:
 ```C++
-	void CreateMetric ( IMetricPlugin** metric );
+	void CreateMetric(IMetricPlugin** metric);
 ```
 ```C++
-	void ReleaseMetric ( IMetricPlugin* metric );
+	void ReleaseMetric(IMetricPlugin* metric);
 ```
 ```C++
 	int GetVQMTVersion();
